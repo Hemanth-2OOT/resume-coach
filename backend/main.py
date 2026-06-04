@@ -385,6 +385,8 @@ async def get_stats(request: Request):
         return JSONResponse({"detail": str(e)}, status_code=500)
 
 
+    
+
 async def analyze_resume_by_id(request: Request):
     try:
         user_id, err = await _require_auth(request)
@@ -464,7 +466,11 @@ app = Starlette(routes=routes)
 # Configure Cross-Origin Resource Sharing (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[FRONTEND_URL, "http://localhost:5173"],
+    allow_origins=[
+        FRONTEND_URL, 
+        "http://localhost:5173",
+        "https://resume-coach-5c68dg9m9-mandla-hemanth-s-projects.vercel.app" # 👈 Explicitly added
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
