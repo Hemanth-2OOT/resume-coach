@@ -1,8 +1,8 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
-const navItems = [
-  { to: "/", label: "Dashboard", icon: "🏠", exact: true },
+const userItems = [
+  { to: "/dashboard", label: "Dashboard", icon: "🏠" },
   { to: "/resumes", label: "My Resumes", icon: "📄" },
   { to: "/upload", label: "Upload Resume", icon: "⬆️" },
 ];
@@ -34,11 +34,14 @@ function Sidebar() {
     transition: "all 0.15s ease",
   });
 
+  // If there is no user logged in yet, don't show the navigation panel
+  if (!user) return null;
+
   return (
     <aside
       style={{
         width: "220px",
-        minHeight: "100vh",
+        height: "100vh",
         background: "#fff",
         borderRight: "1px solid #ede5ed",
         display: "flex",
@@ -49,6 +52,7 @@ function Sidebar() {
         top: 0,
         left: 0,
         zIndex: 100,
+        boxSizing: "border-box"
       }}
     >
       {/* Logo / Brand */}
@@ -78,30 +82,22 @@ function Sidebar() {
         </h2>
       </div>
 
-      {/* Navigation */}
-      <nav style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
-        {navItems.map((item) => (
+      {/* Navigation Links */}
+      <nav style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1, overflowY: "auto" }}>
+        
+        {/* Render standard items only for regular users / non-admins if you want separate layouts */}
+        {!isAdmin && userItems.map((item) => (
           <NavLink
             key={item.to}
             to={item.to}
-            end={item.exact}
             style={({ isActive }) => linkStyle(isActive)}
-            onMouseEnter={(e) => {
-              if (!e.currentTarget.classList.contains("active")) {
-                e.currentTarget.style.background = "#faf5fc";
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!e.currentTarget.classList.contains("active")) {
-                e.currentTarget.style.background = "transparent";
-              }
-            }}
           >
             <span style={{ fontSize: 16 }}>{item.icon}</span>
             {item.label}
           </NavLink>
         ))}
 
+        {/* Render Admin panel links */}
         {isAdmin && (
           <>
             <div
@@ -111,10 +107,10 @@ function Sidebar() {
                 textTransform: "uppercase",
                 letterSpacing: "0.08em",
                 color: "#c0a8c0",
-                padding: "16px 14px 4px",
+                padding: "8px 14px 4px",
               }}
             >
-              Admin
+              Admin Menu
             </div>
             {adminItems.map((item) => (
               <NavLink
@@ -130,15 +126,14 @@ function Sidebar() {
         )}
       </nav>
 
-      {/* User Profile + Logout */}
+      {/* User Profile + Logout Footer */}
       <div
         style={{
           borderTop: "1px solid #ede5ed",
           paddingTop: "1rem",
-          marginTop: "1rem",
+          marginTop: "auto",
         }}
       >
-        {/* User info */}
         <div
           style={{
             display: "flex",
@@ -184,7 +179,7 @@ function Sidebar() {
             </p>
             {isAdmin && (
               <p style={{ margin: 0, fontSize: 10, color: "#9b59b6", fontWeight: 500 }}>
-                Admin
+                Admin Account
               </p>
             )}
           </div>
