@@ -224,14 +224,13 @@ function Login() {
 
   setLoading(true);
   try {
-    // This logs them in and updates AuthContext state
     await login(email, password);
     
-    // Check your email pattern or database property right here to redirect
     if (email.toLowerCase().includes("admin")) {
       navigate("/admin/resumes");
     } else {
-      navigate("/dashboard");
+      // Change this destination path right here!
+      navigate("/upload"); 
     }
   } catch (err) {
     setError("Invalid credentials.");

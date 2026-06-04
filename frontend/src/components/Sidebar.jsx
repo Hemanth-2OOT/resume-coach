@@ -2,10 +2,11 @@ import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 // Items ONLY seen by normal users
+// Change the item arrangement order right here
 const userItems = [
+  { to: "/upload", label: "Upload Resume", icon: "⬆️" },
   { to: "/dashboard", label: "Dashboard", icon: "🏠" },
   { to: "/resumes", label: "My Resumes", icon: "📄" },
-  { to: "/upload", label: "Upload Resume", icon: "⬆️" },
 ];
 
 // Items ONLY seen by administrators

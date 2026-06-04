@@ -9,27 +9,19 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import AdminResumes from './pages/AdminResumes';
-// If you have a Resumes page for normal user history, import it here:
-// import Resumes from './pages/Resumes'; 
+import Resumes from './pages/Resumes'; // 1. UNCOMMENTED AND FIXED IMPORT
 
 export default function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* --- PUBLIC ROUTES (No Sidebar/Layout here!) --- */}
+          {/* --- PUBLIC ROUTES --- */}
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          {/* --- NORMAL USER PROTECTED ROUTES (Wrapped in Layout) --- */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute requireAdmin={false}>
-                <Layout><Dashboard /></Layout>
-              </ProtectedRoute>
-            } 
-          />
+          {/* --- NORMAL USER PROTECTED ROUTES --- */}
+          {/* 2. Upload route is now on top so it matches the priority flow */}
           <Route 
             path="/upload" 
             element={
@@ -38,12 +30,21 @@ export default function App() {
               </ProtectedRoute>
             } 
           />
+          
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute requireAdmin={false}>
+                <Layout><Dashboard /></Layout>
+              </ProtectedRoute>
+            } 
+          />
+
           <Route 
             path="/resumes" 
             element={
               <ProtectedRoute requireAdmin={false}>
-                <Layout><UploadResume /></Layout> 
-                {/* Note: Change <UploadResume /> to your <Resumes /> history page if you have it */}
+                <Layout><Resumes /></Layout> {/* 3. FIXED: Pointing to Resumes component now */}
               </ProtectedRoute>
             } 
           />
@@ -59,7 +60,7 @@ export default function App() {
           />
 
           {/* --- ROOT FALLBACK REDIRECT --- */}
-          {/* Automatically kicks users to /login if they land on the base URL */}
+          {/* 4. Sends users straight to /login if they type in the base domain URL */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
       </BrowserRouter>
