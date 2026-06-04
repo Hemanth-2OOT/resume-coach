@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { API_PREFIX } from "../config";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import Card from "../components/Card";
