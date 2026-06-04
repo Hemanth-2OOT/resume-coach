@@ -1,0 +1,8 @@
+venv/
+__pycache__/
+*.pyc
+.env
+resume_coach.db
+node_modules/
+dist/
+.vscode/
