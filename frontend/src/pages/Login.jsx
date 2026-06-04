@@ -217,25 +217,28 @@ function Login() {
 
   injectFonts();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+ const handleLogin = async (e) => {
+  e.preventDefault();
+  setError("");
+  if (!email || !password) return setError("Please fill fields.");
 
-    if (!email || !password) {
-      setError("Please fill in both fields.");
-      return;
+  setLoading(true);
+  try {
+    // This logs them in and updates AuthContext state
+    await login(email, password);
+    
+    // Check your email pattern or database property right here to redirect
+    if (email.toLowerCase().includes("admin")) {
+      navigate("/admin/resumes");
+    } else {
+      navigate("/dashboard");
     }
-
-    setLoading(true);
-    try {
-      const redirect = await login(email, password);
-      navigate(redirect || "/");
-    } catch (err) {
-      setError(err.message || "Invalid email or password.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  } catch (err) {
+    setError("Invalid credentials.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div style={styles.page}>
