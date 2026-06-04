@@ -1,6 +1,9 @@
 import { useState } from "react";
+import { API_PREFIX } from "../config";
 import { useNavigate, Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { setAuthToken } from "../services/api";
+import api from "../services/api";
 import Card from "../components/Card";
 import Input from "../components/Input";
 import Button from "../components/Button";
@@ -11,7 +14,6 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth(); // Available if needed for context-based session state
   const navigate = useNavigate();
 
   const handleSignup = async (e) => {
@@ -31,25 +33,33 @@ function Signup() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://localhost:8000/api/auth/register", {
+      const response = await fetch(`${API_PREFIX}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        const data = await response.json();
         throw new Error(data.detail || "Signup failed");
       }
 
-      const data = await response.json();
-      localStorage.setItem("token", data.token);
-      
-      if (login) {
-        await login(data.token); 
+      // Store token and set auth header
+      const token = data.token || data.access_token;
+      if (token) {
+        localStorage.setItem("token", token);
+        setAuthToken(token);
+
+        // Fetch user profile to populate context
+        try {
+          await api.get("/auth/me");
+        } catch {
+          // Non-fatal: user is registered, just proceed
+        }
       }
-      
-      // Navigate to home page
+
+      // Navigate to home — page will rehydrate auth from localStorage
       navigate("/");
     } catch (err) {
       setError(err.message || "Signup failed");
@@ -120,9 +130,21 @@ function Signup() {
 
         {/* Input/Form Layout */}
         <form onSubmit={handleSignup}>
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}
+          >
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "#9a829a", marginBottom: 6 }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "#9a829a",
+                  marginBottom: 6,
+                }}
+              >
                 Email Address
               </label>
               <Input
@@ -136,7 +158,17 @@ function Signup() {
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "#9a829a", marginBottom: 6 }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "#9a829a",
+                  marginBottom: 6,
+                }}
+              >
                 Password
               </label>
               <Input
@@ -150,7 +182,17 @@ function Signup() {
             </div>
 
             <div>
-              <label style={{ display: "block", fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", color: "#9a829a", marginBottom: 6 }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: 12,
+                  fontWeight: 600,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.05em",
+                  color: "#9a829a",
+                  marginBottom: 6,
+                }}
+              >
                 Confirm Password
               </label>
               <Input
@@ -178,7 +220,7 @@ function Signup() {
                 fontWeight: 500,
                 display: "flex",
                 alignItems: "center",
-                gap: "8px"
+                gap: "8px",
               }}
             >
               <span>⚠️</span> {error}
@@ -214,7 +256,7 @@ function Signup() {
               marginTop: "1.5rem",
               fontSize: "13px",
               color: "#9a829a",
-              marginBottom: 0
+              marginBottom: 0,
             }}
           >
             Already have an account?{" "}

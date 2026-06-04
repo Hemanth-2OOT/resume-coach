@@ -1,74 +1,222 @@
-import { Link, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
+const navItems = [
+  { to: "/", label: "Dashboard", icon: "🏠", exact: true },
+  { to: "/resumes", label: "My Resumes", icon: "📄" },
+  { to: "/upload", label: "Upload Resume", icon: "⬆️" },
+];
+
+const adminItems = [
+  { to: "/admin/resumes", label: "All Resumes", icon: "🗂️" },
+];
+
 function Sidebar() {
-  const { logout, user } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
+  const linkStyle = (isActive) => ({
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    padding: "10px 14px",
+    borderRadius: "8px",
+    fontSize: "14px",
+    fontWeight: isActive ? 600 : 400,
+    color: isActive ? "#9b59b6" : "#5a445a",
+    background: isActive ? "#f4eef9" : "transparent",
+    textDecoration: "none",
+    transition: "all 0.15s ease",
+  });
+
   return (
-    <div
+    <aside
       style={{
         width: "220px",
-        backgroundColor: "#2c3e50",
-        color: "white",
         minHeight: "100vh",
-        padding: "20px",
+        background: "#fff",
+        borderRight: "1px solid #ede5ed",
+        display: "flex",
+        flexDirection: "column",
+        padding: "1.5rem 1rem",
+        fontFamily: "'DM Sans', sans-serif",
         position: "fixed",
-        left: 0,
         top: 0,
-        height: "100vh",
-        overflowY: "auto"
+        left: 0,
+        zIndex: 100,
       }}
     >
-      <h2>Admin Panel</h2>
-      <hr />
-      
-      <div style={{ marginTop: "20px", marginBottom: "20px" }}>
-        <p style={{ fontSize: "12px", color: "#bbb" }}>{user?.email}</p>
+      {/* Logo / Brand */}
+      <div style={{ marginBottom: "2rem", paddingLeft: "4px" }}>
+        <p
+          style={{
+            fontFamily: "'Fraunces', serif",
+            fontStyle: "italic",
+            fontWeight: 300,
+            fontSize: 12,
+            color: "#9b59b6",
+            margin: "0 0 2px 0",
+          }}
+        >
+          your career
+        </p>
+        <h2
+          style={{
+            fontSize: 18,
+            fontWeight: 700,
+            color: "#1a0a1a",
+            margin: 0,
+            letterSpacing: "-0.02em",
+          }}
+        >
+          Resume Coach
+        </h2>
       </div>
 
-      <div style={{ marginTop: "20px" }}>
-        <p>
-          <Link
-            to="/admin"
-            style={{ color: "white", textDecoration: "none" }}
+      {/* Navigation */}
+      <nav style={{ display: "flex", flexDirection: "column", gap: "4px", flex: 1 }}>
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            end={item.exact}
+            style={({ isActive }) => linkStyle(isActive)}
+            onMouseEnter={(e) => {
+              if (!e.currentTarget.classList.contains("active")) {
+                e.currentTarget.style.background = "#faf5fc";
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!e.currentTarget.classList.contains("active")) {
+                e.currentTarget.style.background = "transparent";
+              }
+            }}
           >
-            Dashboard
-          </Link>
-        </p>
+            <span style={{ fontSize: 16 }}>{item.icon}</span>
+            {item.label}
+          </NavLink>
+        ))}
 
-        <p>
-          <Link
-            to="/admin/resumes"
-            style={{ color: "white", textDecoration: "none" }}
+        {isAdmin && (
+          <>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 600,
+                textTransform: "uppercase",
+                letterSpacing: "0.08em",
+                color: "#c0a8c0",
+                padding: "16px 14px 4px",
+              }}
+            >
+              Admin
+            </div>
+            {adminItems.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                style={({ isActive }) => linkStyle(isActive)}
+              >
+                <span style={{ fontSize: 16 }}>{item.icon}</span>
+                {item.label}
+              </NavLink>
+            ))}
+          </>
+        )}
+      </nav>
+
+      {/* User Profile + Logout */}
+      <div
+        style={{
+          borderTop: "1px solid #ede5ed",
+          paddingTop: "1rem",
+          marginTop: "1rem",
+        }}
+      >
+        {/* User info */}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "8px 10px",
+            borderRadius: "8px",
+            background: "#faf5fc",
+            marginBottom: "8px",
+          }}
+        >
+          {/* Avatar */}
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: "50%",
+              background: "#9b59b6",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: 13,
+              fontWeight: 700,
+              color: "#fff",
+              flexShrink: 0,
+            }}
           >
-            Resumes
-          </Link>
-        </p>
-      </div>
+            {user?.email?.[0]?.toUpperCase() || "U"}
+          </div>
+          <div style={{ overflow: "hidden", flex: 1 }}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 12,
+                fontWeight: 600,
+                color: "#1a0a1a",
+                whiteSpace: "nowrap",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+              }}
+            >
+              {user?.email || "User"}
+            </p>
+            {isAdmin && (
+              <p style={{ margin: 0, fontSize: 10, color: "#9b59b6", fontWeight: 500 }}>
+                Admin
+              </p>
+            )}
+          </div>
+        </div>
 
-      <div style={{ marginTop: "40px" }}>
+        {/* Logout button */}
         <button
           onClick={handleLogout}
           style={{
             width: "100%",
-            padding: "10px",
-            backgroundColor: "#e74c3c",
-            color: "white",
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            padding: "9px 14px",
+            borderRadius: "8px",
+            fontSize: "13px",
+            fontWeight: 500,
+            color: "#a32d2d",
+            background: "transparent",
             border: "none",
-            borderRadius: "4px",
-            cursor: "pointer"
+            cursor: "pointer",
+            transition: "background 0.15s ease",
+            textAlign: "left",
           }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "#fff5f5")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
         >
-          Logout
+          <span style={{ fontSize: 15 }}>🚪</span>
+          Log out
         </button>
       </div>
-    </div>
+    </aside>
   );
 }
 
