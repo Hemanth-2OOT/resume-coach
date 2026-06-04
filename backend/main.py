@@ -464,14 +464,13 @@ routes = [
 app = Starlette(routes=routes)
 
 # Configure Cross-Origin Resource Sharing (CORS)
+# Configure Cross-Origin Resource Sharing (CORS)
+# Configure Cross-Origin Resource Sharing (CORS)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        FRONTEND_URL, 
-        "http://localhost:5173",
-        "https://resume-coach-5c68dg9m9-mandla-hemanth-s-projects.vercel.app" # 👈 Explicitly added
-    ],
-    allow_credentials=True,
+    # This dynamically matches any preview or production Vercel URL, plus your local test server
+    allow_origin_regex=r"https://.*\.vercel\.app|http://localhost:\d+", 
+    allow_credentials=True,  # 👈 Keep this True now!
     allow_methods=["*"],
     allow_headers=["*"],
 )
