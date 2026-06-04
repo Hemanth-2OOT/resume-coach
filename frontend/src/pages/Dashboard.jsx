@@ -139,7 +139,7 @@ function ScoreCard({ score }) {
             fontWeight="600"
             fill="#1a0a1a"
           >
-            {score.toFixed(0)}
+            {score ? score.toFixed(0) : 0}
           </text>
         </svg>
 
@@ -151,7 +151,7 @@ function ScoreCard({ score }) {
               color: "#1a0a1a",
             }}
           >
-            {score.toFixed(1)}
+            {score ? score.toFixed(1) : "0.0"}
           </div>
 
           <div
@@ -190,16 +190,13 @@ function Dashboard() {
       const res = await api.get("/stats");
       setStats(res.data);
     } catch (error) {
-      console.error(error);
+      console.error("Dashboard fetching error: ", error);
     } finally {
       setLoading(false);
     }
   };
-  // Inside Dashboard.jsx pseudo-logic
-if (resumes.length === 0) {
-  return <EmptyState message="You haven't uploaded any resumes yet. Head over to the Upload tab to get started!" />;
-}
 
+  // 1. First, check if the application is still calling the backend API
   if (loading) {
     return (
       <div
@@ -218,6 +215,31 @@ if (resumes.length === 0) {
     );
   }
 
+  // 2. FIXED CONDITIONAL PATHWAY: Now handles empty stats gracefully without referencing missing data variables
+  if (!stats || stats.total_resumes === 0) {
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#f7f3f7",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "DM Sans, sans-serif",
+          padding: "2rem",
+          textAlign: "center"
+        }}
+      >
+        <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>📊</div>
+        <h3 style={{ color: "#1a0a1a", margin: "0 0 10px 0" }}>No Data Available Yet</h3>
+        <p style={{ color: "#9a829a", maxWidth: 400, margin: 0, fontSize: 14, lineHeight: 1.5 }}>
+          You haven't uploaded any resumes yet. Head over to the Upload Resume tab to get started!
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div
       style={{
@@ -228,7 +250,6 @@ if (resumes.length === 0) {
       }}
     >
       {/* Header */}
-
       <p
         style={{
           fontFamily: "'Fraunces', serif",
@@ -239,7 +260,7 @@ if (resumes.length === 0) {
           marginBottom: 4,
         }}
       >
-        Administration
+        Workspace
       </p>
 
       <h1
@@ -266,7 +287,6 @@ if (resumes.length === 0) {
       </p>
 
       {/* Stats Grid */}
-
       <div
         style={{
           display: "grid",
@@ -283,8 +303,7 @@ if (resumes.length === 0) {
         <ScoreCard score={stats.avg_score} />
       </div>
 
-      {/* Optional Overview Card */}
-
+      {/* Overview Card */}
       <div
         style={{
           marginTop: "20px",
@@ -326,7 +345,7 @@ if (resumes.length === 0) {
           Your platform has analysed{" "}
           <strong>{stats.total_resumes}</strong> resumes with an
           average quality score of{" "}
-          <strong>{stats.avg_score.toFixed(1)}</strong>.
+          <strong>{stats.avg_score ? stats.avg_score.toFixed(1) : "0.0"}</strong>.
         </p>
       </div>
     </div>
