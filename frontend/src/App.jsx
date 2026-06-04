@@ -9,7 +9,6 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
 import AdminResumes from './pages/AdminResumes';
-import Resumes from './pages/Resumes'; // 1. UNCOMMENTED AND FIXED IMPORT
 
 export default function App() {
   return (
@@ -21,7 +20,6 @@ export default function App() {
           <Route path="/signup" element={<Signup />} />
 
           {/* --- NORMAL USER PROTECTED ROUTES --- */}
-          {/* 2. Upload route is now on top so it matches the priority flow */}
           <Route 
             path="/upload" 
             element={
@@ -40,15 +38,6 @@ export default function App() {
             } 
           />
 
-          <Route 
-            path="/resumes" 
-            element={
-              <ProtectedRoute requireAdmin={false}>
-                <Layout><Resumes /></Layout> {/* 3. FIXED: Pointing to Resumes component now */}
-              </ProtectedRoute>
-            } 
-          />
-
           {/* --- ADMIN ONLY PROTECTED ROUTES --- */}
           <Route 
             path="/admin/resumes" 
@@ -59,9 +48,15 @@ export default function App() {
             } 
           />
 
-          {/* --- ROOT FALLBACK REDIRECT --- */}
-          {/* 4. Sends users straight to /login if they type in the base domain URL */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* --- SMART ROOT FALLBACK REDIRECT --- */}
+          <Route 
+            path="*" 
+            element={
+              <ProtectedRoute requireAdmin={false}>
+                <Navigate to="/upload" replace />
+              </ProtectedRoute>
+            } 
+          />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

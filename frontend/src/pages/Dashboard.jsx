@@ -195,6 +195,10 @@ function Dashboard() {
       setLoading(false);
     }
   };
+  // Inside Dashboard.jsx pseudo-logic
+if (resumes.length === 0) {
+  return <EmptyState message="You haven't uploaded any resumes yet. Head over to the Upload tab to get started!" />;
+}
 
   if (loading) {
     return (

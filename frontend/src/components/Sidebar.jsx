@@ -6,7 +6,6 @@ import { useAuth } from "../context/AuthContext";
 const userItems = [
   { to: "/upload", label: "Upload Resume", icon: "⬆️" },
   { to: "/dashboard", label: "Dashboard", icon: "🏠" },
-  { to: "/resumes", label: "My Resumes", icon: "📄" },
 ];
 
 // Items ONLY seen by administrators
